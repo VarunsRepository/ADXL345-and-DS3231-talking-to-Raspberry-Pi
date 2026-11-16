@@ -1,0 +1,24 @@
+# qmake / make output
+Makefile
+Makefile.*
+*.o
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+.qmake.stash
+*.pro.user
+*.pro.user.*
+
+# Built binary
+een1071-dashboard
+
+# QtCreator / shadow builds
+build-*/
+*.autosave
+
+# Editor / OS noise
+.vscode/
+.idea/
+*.swp
+.DS_Store
