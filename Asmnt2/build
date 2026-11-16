@@ -1,0 +1,42 @@
+#!/bin/bash
+# Builds everything into ./bin. Run from the project root.
+#
+# Needs: libgpiod v2 (-lgpiod), Paho MQTT C (-lpaho-mqtt3c),
+#        nlohmann/json headers (apt: nlohmann-json3-dev)
+set -e
+
+CXX=${CXX:-g++}
+FLAGS="-std=c++17 -O2 -Wall -Wextra"
+mkdir -p bin
+
+echo "== I2C + sensors =="
+$CXX $FLAGS -c ADXL345/I2CDevice.cpp -o bin/I2CDevice.o
+$CXX $FLAGS -c ADXL345/ADXL345.cpp   -o bin/ADXL345.o
+$CXX $FLAGS -c ADXL345/DS3231.cpp    -o bin/DS3231.o
+
+echo "== GPIO =="
+$CXX $FLAGS -c GPIOManager/GPIOManager.cpp -o bin/GPIOManager.o
+
+echo "== publishers =="
+$CXX $FLAGS MQTT/MQTTPublisherApp.cpp MQTT/MQTTPublisher.cpp \
+      bin/I2CDevice.o bin/ADXL345.o \
+      -o bin/MQTTPublisherApp -lpaho-mqtt3c
+
+$CXX $FLAGS MQTT/MQTTPublisherApp_withDualThreads.cpp MQTT/MQTTPublisher.cpp \
+      bin/I2CDevice.o bin/ADXL345.o \
+      -o bin/MQTTPublisherApp_withDualThreads -lpaho-mqtt3c -lpthread
+
+$CXX $FLAGS MQTT/paho_test_publish.cpp \
+      -o bin/paho_test_publish -lpaho-mqtt3c
+
+$CXX $FLAGS MQTT/paho_test_publish_with_cmd_line_args.cpp \
+      -o bin/paho_test_publish_with_cmd_line_args -lpaho-mqtt3c
+
+echo "== subscriber =="
+$CXX $FLAGS MQTT/MQTT_SubscriberApp.cpp bin/GPIOManager.o \
+      -o bin/MQTT_SubscriberApp -lpaho-mqtt3c -lgpiod
+
+echo "== tests =="
+$CXX $FLAGS MQTT/JSON_parser_test_app.cpp -o bin/JSON_parser_test_app
+
+echo "Built into ./bin"

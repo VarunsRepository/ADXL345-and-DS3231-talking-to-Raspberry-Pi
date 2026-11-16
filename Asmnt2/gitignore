@@ -1,0 +1,29 @@
+# Build output
+bin/
+*.o
+*.so
+*.a
+
+# Compiled executables (the repo had a committed x86-64 ELF)
+ADXL345
+accel_rtc
+rtc
+MQTTPublisherApp
+MQTTPublisherApp_withDualThreads
+MQTT_SubscriberApp
+paho_test_publish
+paho_test_publish_with_cmd_line_args
+JSON_parser_test_app
+
+# Never commit these
+*.env
+secrets*
+*.pem
+*.key
+.ssh/
+
+# Editor / OS noise
+.vscode/
+.idea/
+*.swp
+.DS_Store
